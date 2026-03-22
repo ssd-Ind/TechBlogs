@@ -1,5 +1,5 @@
 🚀 Live Site
-View the live blog here: https://your-username.github.io
+View the live blog here: https://ssd-ind.github.io/TechBlogs/
 
 🛠 Project Architecture
 This site is built as a Single Page Application (SPA) layout using clean HTML5 and CSS3. It is designed to mimic the structured navigation of Confluence or ReadTheDocs.
@@ -38,8 +38,8 @@ If you want to run this locally to test new blog posts:
 Clone the repository:
 
 Bash
-git clone https://github.com/your-username/your-username.github.io.git
-cd your-username.github.io
+git clone https://github.com/your-username/ssd-ind.github.io.git
+cd ssd-ind.github.io
 Run a local server (Python):
 
 Bash
@@ -55,4 +55,4 @@ Navigate to http://localhost:8000.
 [ ] Add a LaTeX renderer (MathJax) for analog circuit equations.
 
 🤝 Contact
-[Your Name] Senior Analog & Mixed-Signal Design Engineer [Your LinkedIn Profile] | [Your Portfolio/Email]
+[SoumyaShib] Analog & Mixed-Signal Design Engineer
