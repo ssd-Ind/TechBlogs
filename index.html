@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech & Insights | Engineering Blog</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-blue: #0052cc; /* Confluence Blue */
+            --bg-light: #f4f5f7;
+            --text-dark: #172b4d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            color: var(--text-dark);
+            background-color: white;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-light);
+            border-right: 1px solid #ebecf0;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 { font-size: 1.2rem; color: var(--primary-blue); }
+        
+        .nav-group { margin-bottom: 25px; }
+        .nav-group h3 { font-size: 0.85rem; text-transform: uppercase; color: #6b778c; margin-bottom: 10px; }
+        .nav-item { 
+            display: block; 
+            padding: 8px 10px; 
+            text-decoration: none; 
+            color: var(--text-dark); 
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+        .nav-item:hover { background: #ebecf0; }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px 0;
+            z-index: 10;
+        }
+
+        #site-search {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dfe1e6;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #site-search:focus { border-color: var(--primary-blue); }
+
+        /* Typography & Code */
+        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .meta { color: #6b778c; margin-bottom: 30px; }
+        
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .highlight { color: #a6e22e; } /* Python comment color */
+
+        .guide-step {
+            border-left: 4px solid var(--primary-blue);
+            padding-left: 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Knowledge Base</h2>
+        
+        <div class="nav-group">
+            <h3>Technical Blogs</h3>
+            <a href="#" class="nav-item">Analog Design Basics</a>
+            <a href="#" class="nav-item">Python for EDA</a>
+            <a href="#" class="nav-item">Shell Scripting Tips</a>
+        </div>
+
+        <div class="nav-group">
+            <h3>Non-Technical</h3>
+            <a href="#" class="nav-item">Personal Finance</a>
+            <a href="#" class="nav-item">Photography Portfolio</a>
+            <a href="#" class="nav-item">Tennis Log</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="search-container">
+            <input type="text" id="site-search" placeholder="Search across all blogs (e.g., 'duplicates', 'python')...">
+        </div>
+
+        <article id="post-content">
+            <h1>How to Identify & Delete Duplicate Files</h1>
+            <p class="meta">Published: March 22, 2026 | Category: IT Know-How</p>
+
+            <p>Managing large datasets or design libraries often leads to file redundancy. For an engineer, relying on filenames is insufficient because `data_v1.txt` and `data_final.txt` might contain identical bitstreams.</p>
+
+            <h3>The Logic: Hashing</h3>
+            <p>The most robust way to find duplicates is by comparing <strong>MD5 Checksums</strong>. Two files with the exact same content will always yield the same hash.</p>
+
+            <div class="guide-step">
+                <strong>Step 1:</strong> Identify the target directory.<br>
+                <strong>Step 2:</strong> Iterate through all files recursively.<br>
+                <strong>Step 3:</strong> Store hashes in a dictionary to find collisions.
+            </div>
+
+            <h3>Implementation in Python</h3>
+            <pre>
+import os
+import hashlib
+
+<span class="highlight"># Function to generate file hash</span>
+def get_file_hash(path):
+    hasher = hashlib.md5()
+    with open(path, 'rb') as f:
+        hasher.update(f.read())
+    return hasher.hexdigest()
+
+<span class="highlight"># Dictionary to store {hash: first_occurrence_path}</span>
+seen_hashes = {}
+            </pre>
+
+            <h3>Summary</h3>
+            <p>Using this method ensures you don't delete unique files by accident. Always perform a "Dry Run" by printing the filenames before calling <code>os.remove()</code>.</p>
+        </article>
+    </div>
+
+    <script>
+        // Simple client-side search simulation
+        const searchInput = document.getElementById('site-search');
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const content = document.getElementById('post-content');
+            
+            // In a real GitHub Pages site, this would trigger 
+            // a search across your Markdown files using Lunr.js or Google PSE.
+            if(term.length > 3) {
+                console.log("Searching for: " + term);
+            }
+        });
+    </script>
+</body>
+</html>
