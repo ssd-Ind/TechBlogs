@@ -1,58 +1,38 @@
-🚀 Live Site
-View the live blog here: https://ssd-ind.github.io/TechBlogs/
+# 🐍 FileRenamer Pro
 
-🛠 Project Architecture
-This site is built as a Single Page Application (SPA) layout using clean HTML5 and CSS3. It is designed to mimic the structured navigation of Confluence or ReadTheDocs.
+> **Smart File & Directory Renamer in Python** — with Unicode normalization, transliteration, dry-run mode, undo support, and more.
 
-Directory Structure
+[![Python 3.x](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://YOUR_USERNAME.github.io/YOUR_REPO/)
 
-index.html: The main entry point and UI framework.
+---
 
-/assets: Contains images, CSS files, and custom JavaScript.
+## ✨ Features
 
-/blogs: Sub-directory for individual HTML/Markdown blog posts.
+- 🌍 **Non-English Support** — Transliterates Cyrillic, Greek, Arabic, German umlauts, and more
+- 🔤 **Unicode Normalization** — NFKD decomposition with accent stripping
+- 🔁 **Undo / Rollback** — JSON logging with `--undo` support
+- 🛡 **Conflict Resolution** — Auto-appends `_1`, `_2` to prevent overwrites
+- 👁 **Dry Run Mode** — Preview changes with `--dry-run`
+- 🔡 **Case Conversion** — 6 modes: original, lower, upper, title, snake, camel
+- 🚫 **Extension Preservation** — Never alters file extensions
+- ⚙ **Full CLI** — Powered by argparse with comprehensive options
+- 🖥 **Cross-Platform** — Works on Linux, macOS, and Windows
 
-/scripts: Python and Shell automation tools discussed in the blogs.
+---
 
-📖 Key Sections
-1. Technical Know-How
+## 🚀 Quick Start
 
-Analog Design: Deep dives into ADC architectures, LDO compensation, and high-speed serial links.
+```bash
+# Download
+curl -O https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/rename_files.py
 
-EDA Automation: Python-based utilities for Liberty file validation (lib_automation_utils.py) and Cadence Virtuoso workflow enhancements.
+# Preview changes (dry run)
+python3 rename_files.py /path/to/folder --dry-run
 
-IT Troubleshooting: Practical guides like "Identifying & Deleting Duplicate Files" using hash-based logic.
+# Execute
+python3 rename_files.py /path/to/folder
 
-2. Non-Technical / Personal
-
-Finance & Portfolio: Insights into stock rebalancing and credit card optimization.
-
-Hobbies: Photography galleries and tennis activity logs.
-
-🔍 Search Capability
-The site utilizes Google Programmable Search (PSE) to provide deep-index searching across all hosted pages, ensuring a professional "Knowledge Base" experience.
-
-💻 Technical Setup for Development
-If you want to run this locally to test new blog posts:
-
-Clone the repository:
-
-Bash
-git clone https://github.com/your-username/ssd-ind.github.io.git
-cd ssd-ind.github.io
-Run a local server (Python):
-
-Bash
-python -m http.server 8000
-View in Browser:
-Navigate to http://localhost:8000.
-
-📝 Future Roadmap
-[ ] Integrate Jekyll for automated Markdown-to-HTML conversion.
-
-[ ] Implement Prism.js for enhanced syntax highlighting in Python/Shell code blocks.
-
-[ ] Add a LaTeX renderer (MathJax) for analog circuit equations.
-
-🤝 Contact
-[SoumyaShib] Analog & Mixed-Signal Design Engineer
+# Undo if needed
+python3 rename_files.py --undo rename_log.json
