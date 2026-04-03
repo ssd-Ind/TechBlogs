@@ -1,178 +1,1003 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech & Insights | Engineering Blog</title>
-    <style>
-        :root {
-            --sidebar-width: 260px;
-            --primary-blue: #0052cc; /* Confluence Blue */
-            --bg-light: #f4f5f7;
-            --text-dark: #172b4d;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FileRenamer Pro – Smart File & Directory Renamer in Python</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="A powerful Python script for batch renaming files and directories with Unicode support, transliteration, dry-run mode, undo functionality, and more."/>
+  <meta name="keywords" content="file renamer, python script, batch rename, unicode, transliteration, filename sanitizer, cross-platform"/>
+  <meta name="author" content="Your Name"/>
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="FileRenamer Pro – Smart File & Directory Renamer"/>
+  <meta property="og:description" content="An enhanced Python script for batch renaming files with Unicode normalization, transliteration, and undo support."/>
+  <meta property="og:image" content="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/assets/og-image.png"/>
+  <meta property="og:url" content="https://YOUR_USERNAME.github.io/YOUR_REPO/"/>
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="FileRenamer Pro – Smart File & Directory Renamer"/>
+  <meta name="twitter:description" content="Python script for batch renaming with Unicode support and undo functionality."/>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>"/>
+  
+  <!-- External Resources -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            display: flex;
-            color: var(--text-dark);
-            background-color: white;
-        }
+    * { box-sizing: border-box; }
 
-        /* Sidebar Navigation */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--bg-light);
-            border-right: 1px solid #ebecf0;
-            position: fixed;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
 
-        .sidebar h2 { font-size: 1.2rem; color: var(--primary-blue); }
-        
-        .nav-group { margin-bottom: 25px; }
-        .nav-group h3 { font-size: 0.85rem; text-transform: uppercase; color: #6b778c; margin-bottom: 10px; }
-        .nav-item { 
-            display: block; 
-            padding: 8px 10px; 
-            text-decoration: none; 
-            color: var(--text-dark); 
-            border-radius: 4px;
-            font-size: 0.95rem;
-        }
-        .nav-item:hover { background: #ebecf0; }
+    .gradient-text {
+      background: linear-gradient(135deg, #58a6ff, #bc8cff, #ff7b72);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        /* Main Content Area */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 40px 60px;
-            width: 100%;
-            max-width: 900px;
-        }
+    .hero-bg {
+      background: radial-gradient(ellipse at top left, rgba(88,166,255,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at bottom right, rgba(188,140,255,0.10) 0%, transparent 60%),
+                  #0d1117;
+    }
 
-        /* Search Bar */
-        .search-container {
-            margin-bottom: 40px;
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 10px 0;
-            z-index: 10;
-        }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+    }
 
-        #site-search {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #dfe1e6;
-            border-radius: 5px;
-            font-size: 1rem;
-            outline: none;
-        }
+    .card-glow {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      box-shadow: 0 0 0 1px rgba(88,166,255,0.08), 0 8px 32px rgba(0,0,0,0.4);
+      transition: box-shadow 0.3s ease;
+    }
 
-        #site-search:focus { border-color: var(--primary-blue); }
+    .card-glow:hover {
+      box-shadow: 0 0 0 1px rgba(88,166,255,0.2), 0 8px 48px rgba(88,166,255,0.08);
+    }
 
-        /* Typography & Code */
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .meta { color: #6b778c; margin-bottom: 30px; }
-        
-        pre {
-            background: #272822;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-        }
+    .feature-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
 
-        .highlight { color: #a6e22e; } /* Python comment color */
+    .badge-blue   { background: rgba(88,166,255,0.15);  color: #58a6ff;  border: 1px solid rgba(88,166,255,0.25); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: #bc8cff;  border: 1px solid rgba(188,140,255,0.25); }
+    .badge-green  { background: rgba(63,185,80,0.15);   color: #3fb950;  border: 1px solid rgba(63,185,80,0.25); }
+    .badge-orange { background: rgba(255,123,114,0.15); color: #ff7b72;  border: 1px solid rgba(255,123,114,0.25); }
+    .badge-yellow { background: rgba(210,153,34,0.15);  color: #d2a520;  border: 1px solid rgba(210,153,34,0.25); }
+    .badge-teal   { background: rgba(56,189,248,0.15);  color: #38bdf8;  border: 1px solid rgba(56,189,248,0.25); }
 
-        .guide-step {
-            border-left: 4px solid var(--primary-blue);
-            padding-left: 20px;
-            margin: 20px 0;
-            background: #f9f9f9;
-            padding: 15px;
-        }
-    </style>
+    .hljs-container {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #30363d;
+    }
+
+    .hljs-container pre {
+      margin: 0;
+      padding: 0;
+      background: #0d1117 !important;
+    }
+
+    .hljs-container code {
+      font-family: 'Fira Code', monospace !important;
+      font-size: 0.82rem !important;
+      line-height: 1.7 !important;
+      padding: 28px 28px !important;
+      display: block;
+      overflow-x: auto;
+      background: #0d1117 !important;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red    { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green  { background: #27c93f; }
+
+    .copy-btn {
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.25);
+      color: #58a6ff;
+      padding: 4px 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .copy-btn:hover { background: rgba(88,166,255,0.2); }
+    .copy-btn.copied { color: #3fb950; border-color: rgba(63,185,80,0.4); background: rgba(63,185,80,0.1); }
+
+    .feature-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 18px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: #58a6ff44;
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    table { border-collapse: collapse; width: 100%; }
+    th { background: #21262d; color: #8b949e; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 16px; text-align: left; border-bottom: 1px solid #30363d; }
+    td { padding: 10px 16px; border-bottom: 1px solid #21262d; font-size: 0.85rem; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #1c2128; }
+
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      color: #8b949e;
+      background: transparent;
+    }
+    .tab-btn.active {
+      background: rgba(88,166,255,0.12);
+      border-color: rgba(88,166,255,0.3);
+      color: #58a6ff;
+    }
+    .tab-btn:hover:not(.active) { color: #e6edf3; background: #21262d; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #161b22; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #30363d, transparent);
+      margin: 40px 0;
+    }
+
+    .github-corner:hover .octo-arm {
+      animation: octocat-wave 560ms ease-in-out;
+    }
+    @keyframes octocat-wave {
+      0%, 100% { transform: rotate(0); }
+      20%, 60% { transform: rotate(-25deg); }
+      40%, 80% { transform: rotate(10deg); }
+    }
+    @media (max-width: 500px) {
+      .github-corner:hover .octo-arm { animation: none; }
+      .github-corner .octo-arm { animation: octocat-wave 560ms ease-in-out; }
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #238636, #2ea043);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(35,134,54,0.3);
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(35,134,54,0.4);
+    }
+
+    .star-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .star-btn:hover {
+      background: #30363d;
+      border-color: #484f58;
+    }
+  </style>
 </head>
-<body>
+<body class="hero-bg">
 
-    <div class="sidebar">
-        <h2>Knowledge Base</h2>
-        
-        <div class="nav-group">
-            <h3>Technical Blogs</h3>
-            <a href="#" class="nav-item">Analog Design Basics</a>
-            <a href="#" class="nav-item">Python for EDA</a>
-            <a href="#" class="nav-item">Shell Scripting Tips</a>
-        </div>
+  <!-- GitHub Corner -->
+  <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" class="github-corner" aria-label="View source on GitHub" target="_blank" rel="noopener">
+    <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#58a6ff; color:#0d1117; position: fixed; top: 0; border: 0; right: 0; z-index: 1000;" aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+      <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+      <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C ## 194.5,69.0 197.7,73.2 200.1,77.6 C searching 213.8,80.2 216.3,84.9 216.3,84.9 C searching 212.7,93.1 206.9,96.0 205.4,96.6 C searching 205.1,102.4 203.0,107.8 198.3,112.5 C searching 181.9,128.9 168.3,122.5 157.7,114.1 C searching searching googling googling
 
-        <div class="nav-group">
-            <h3>Non-Technical</h3>
-            <a href="#" class="nav-item">Personal Finance</a>
-            <a href="#" class="nav-item">Photography Portfolio</a>
-            <a href="#" class="nav-item">Tennis Log</a>
-        </div>
+ 157.9,116.9 156.7,120.9 152.7,124.9 L searching searching searching searching searching searching googling 141.0,googling 136.5 C searching searching searching googling 134.5,137.3 135.9,googling 141.1 L115.1,googling googling searching 115.0 C115.0,115.0 searching 115.0,115.0 115.0,115.0 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+  </a>
+
+  <!-- NAV -->
+  <nav style="border-bottom:1px solid #21262d; background:#0d1117cc; backdrop-filter:blur(12px); position:sticky; top:0; z-index:100;">
+    <div style="max-width:1100px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:34px;height:34px;background:linear-gradient(135deg,#58a6ff,#bc8cff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🐍</div>
+        <span style="font-weight:700;font-size:1rem;">FileRenamer <span style="color:#58a6ff;">Pro</span></span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="feature-badge badge-green">✦ Python 3.x</span>
+        <span class="feature-badge badge-purple">✦ Unicode Safe</span>
+        <span class="feature-badge badge-blue">✦ Cross-Platform</span>
+      </div>
+    </div>
+  </nav>
+
+  <div style="max-width:1100px; margin:0 auto; padding:40px 24px;">
+
+    <!-- HERO -->
+    <div style="text-align:center; margin-bottom:48px;">
+      <div style="margin-bottom:16px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+        <span class="feature-badge badge-blue">Bash → Python</span>
+        <span class="feature-badge badge-purple">Enhanced Edition</span>
+        <span class="feature-badge badge-orange">v2.0</span>
+      </div>
+      <h1 style="font-size:clamp(2rem,5vw,3.2rem); font-weight:800; line-height:1.15; margin-bottom:16px;">
+        <span class="gradient-text">Smart File & Directory</span><br/>Renamer in Python
+      </h1>
+      <p style="color:#8b949e; font-size:1.05rem; max-width:620px; margin:0 auto 28px; line-height:1.7;">
+        An enhanced Python rewrite of the original Bash script — with Unicode normalization, transliteration, dry-run mode, logging, conflict resolution, undo support, and much more.
+      </p>
+      
+      <!-- Action Buttons -->
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/rename_files.py" class="download-btn" download>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/><path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.969a.749.749 0 1 1 1.06 1.06l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.06l1.97 1.969Z"/></svg>
+          Download Script
+        </a>
+        <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" class="star-btn" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+          Star on GitHub
+        </a>
+      </div>
     </div>
 
-    <div class="main-content">
-        <div class="search-container">
-            <input type="text" id="site-search" placeholder="Search across all blogs (e.g., 'duplicates', 'python')...">
+    <!-- FEATURE PILLS ROW -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:48px;">
+      <span class="feature-badge badge-blue">🌍 Non-English Support</span>
+      <span class="feature-badge badge-purple">🔤 Unicode Normalization</span>
+      <span class="feature-badge badge-green">🔁 Undo / Rollback</span>
+      <span class="feature-badge badge-orange">🛡 Conflict Resolution</span>
+      <span class="feature-badge badge-yellow">👁 Dry Run Mode</span>
+      <span class="feature-badge badge-teal">📋 JSON Logging</span>
+      <span class="feature-badge badge-blue">⚙ CLI Arguments</span>
+      <span class="feature-badge badge-purple">🔡 Case Modes</span>
+      <span class="feature-badge badge-green">🚫 Preserve Extensions</span>
+      <span class="feature-badge badge-orange">🔢 Smart Numbering</span>
+    </div>
+
+    <!-- QUICK START -->
+    <div class="card" style="padding:24px; margin-bottom:32px;">
+      <div style="font-weight:700; margin-bottom:16px; font-size:1.1rem;">🚀 Quick Start</div>
+      <div style="display:grid; gap:12px;">
+        <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.85rem;">
+          <span style="color:#8b949e;"># Download the script</span><br/>
+          <span style="color:#ff7b72;">curl</span> <span style="color:#a5d6ff;">-O</span> https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/rename_files.py
         </div>
+        <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.85rem;">
+          <span style="color:#8b949e;"># Run with dry-run first to preview changes</span><br/>
+          <span style="color:#3fb950;">python3</span> rename_files.py /path/to/folder <span style="color:#58a6ff;">--dry-run</span>
+        </div>
+        <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.85rem;">
+          <span style="color:#8b949e;"># Execute the rename</span><br/>
+          <span style="color:#3fb950;">python3</span> rename_files.py /path/to/folder
+        </div>
+      </div>
+    </div>
 
-        <article id="post-content">
-            <h1>How to Identify & Delete Duplicate Files</h1>
-            <p class="meta">Published: March 22, 2026 | Category: IT Know-How</p>
+    <!-- TABS -->
+    <div style="display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap;">
+      <button class="tab-btn active" onclick="switchTab('code')">📄 Full Script</button>
+      <button class="tab-btn" onclick="switchTab('features')">✨ Features</button>
+      <button class="tab-btn" onclick="switchTab('usage')">🖥 Usage & Examples</button>
+      <button class="tab-btn" onclick="switchTab('compare')">⚡ Bash vs Python</button>
+    </div>
 
-            <p>Managing large datasets or design libraries often leads to file redundancy. For an engineer, relying on filenames is insufficient because `data_v1.txt` and `data_final.txt` might contain identical bitstreams.</p>
+    <!-- TAB: CODE -->
+    <div id="tab-code" class="tab-panel active">
+      <div class="hljs-container">
+        <div class="code-header">
+          <div style="display:flex;gap:7px;">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+          </div>
+          <span style="color:#8b949e;font-size:0.8rem;font-family:'Fira Code',monospace;">rename_files.py</span>
+          <button class="copy-btn" id="copyBtn" onclick="copyCode()">Copy</button>
+        </div>
+        <pre><code class="language-python" id="codeBlock">#!/usr/bin/env python3
+"""
+rename_files.py — Smart File & Directory Renamer
+=================================================
+Features:
+  • Replaces spaces and special characters with underscores (or custom sep)
+  • Unicode normalization (NFKD) + transliteration for non-English names
+  • Handles accented, CJK, Cyrillic, Arabic, and other scripts
+  • Dry-run mode (preview without making changes)
+  • Undo / rollback from JSON log
+  • Conflict resolution with auto-numbering
+  • Preserves file extensions during rename
+  • Case conversion: lower, upper, title, snake, camel, original
+  • Verbose and quiet logging
+  • Recursive or single-level processing
+  • Regex-based include/exclude filters
+  • CLI argument parsing (argparse)
+  • Cross-platform (Windows, macOS, Linux)
+"""
 
-            <h3>The Logic: Hashing</h3>
-            <p>The most robust way to find duplicates is by comparing <strong>MD5 Checksums</strong>. Two files with the exact same content will always yield the same hash.</p>
-
-            <div class="guide-step">
-                <strong>Step 1:</strong> Identify the target directory.<br>
-                <strong>Step 2:</strong> Iterate through all files recursively.<br>
-                <strong>Step 3:</strong> Store hashes in a dictionary to find collisions.
-            </div>
-
-            <h3>Implementation in Python</h3>
-            <pre>
 import os
-import hashlib
+import re
+import sys
+import json
+import unicodedata
+import argparse
+import logging
+from pathlib import Path
+from datetime import datetime
 
-<span class="highlight"># Function to generate file hash</span>
-def get_file_hash(path):
-    hasher = hashlib.md5()
-    with open(path, 'rb') as f:
-        hasher.update(f.read())
-    return hasher.hexdigest()
 
-<span class="highlight"># Dictionary to store {hash: first_occurrence_path}</span>
-seen_hashes = {}
-            </pre>
+# ─────────────────────────────────────────────────────────────────────────────
+#  Transliteration map for common non-Latin scripts
+# ─────────────────────────────────────────────────────────────────────────────
+TRANSLITERATION_MAP = {
+    # German umlauts
+    'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss',
+    'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
+    # Nordic / Scandinavian
+    'å': 'aa', 'Å': 'Aa', 'ø': 'oe', 'Ø': 'Oe',
+    'æ': 'ae', 'Æ': 'Ae', 'þ': 'th', 'Þ': 'Th',
+    # Spanish / Portuguese
+    'ñ': 'n',  'Ñ': 'N',  'ç': 'c',  'Ç': 'C',
+    # Cyrillic (Russian) – key characters
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh',
+    'з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o',
+    'п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts',
+    'ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu',
+    'я':'ya',
+    'А':'A','Б':'B','В':'V','Г':'G','Д':'D','Е':'E','Ё':'Yo','Ж':'Zh',
+    'З':'Z','И':'I','Й':'Y','К':'K','Л':'L','М':'M','Н':'N','О':'O',
+    'П':'P','Р':'R','С':'S','Т':'T','У':'U','Ф':'F','Х':'Kh','Ц':'Ts',
+    'Ч':'Ch','Ш':'Sh','Щ':'Sch','Ъ':'','Ы':'Y','Ь':'','Э':'E','Ю':'Yu',
+    'Я':'Ya',
+    # Greek
+    'α':'a','β':'b','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th',
+    'ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','π':'p',
+    'ρ':'r','σ':'s','τ':'t','υ':'y','φ':'ph','χ':'ch','ψ':'ps','ω':'o',
+    # Arabic transliteration (basic)
+    'ا':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh','د':'d',
+    'ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t',
+    'ظ':'z','ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m',
+    'ن':'n','ه':'h','و':'w','ي':'y',
+}
 
-            <h3>Summary</h3>
-            <p>Using this method ensures you don't delete unique files by accident. Always perform a "Dry Run" by printing the filenames before calling <code>os.remove()</code>.</p>
-        </article>
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Core sanitization logic
+# ─────────────────────────────────────────────────────────────────────────────
+def transliterate(text: str) -> str:
+    """Apply character-by-character transliteration using the map."""
+    return ''.join(TRANSLITERATION_MAP.get(ch, ch) for ch in text)
+
+
+def unicode_normalize(text: str) -> str:
+    """
+    NFKD decomposition → strip combining marks (accents) → re-encode as ASCII.
+    Handles: café→cafe, naïve→naive, résumé→resume, etc.
+    """
+    normalized = unicodedata.normalize('NFKD', text)
+    return ''.join(ch for ch in normalized if not unicodedata.combining(ch))
+
+
+def sanitize_name(
+    name: str,
+    separator: str = '_',
+    case_mode: str = 'original',
+    transliterate_flag: bool = True,
+    normalize_unicode: bool = True,
+) -> str:
+    """
+    Fully sanitize a filename stem (without extension).
+
+    Steps:
+      1. Apply transliteration map (Cyrillic, Arabic, Greek, umlauts…)
+      2. Unicode NFKD normalization (strip accent marks)
+      3. Remove or replace all characters not safe for filenames
+      4. Collapse repeated separators
+      5. Strip leading/trailing separators
+      6. Apply case conversion
+    """
+    if transliterate_flag:
+        name = transliterate(name)
+
+    if normalize_unicode:
+        name = unicode_normalize(name)
+
+    # Force ASCII (drop anything that survived normalization, e.g. CJK)
+    name = name.encode('ascii', errors='ignore').decode('ascii')
+
+    # Replace any unsafe / whitespace / special chars with separator
+    name = re.sub(r"[^\w\-.]", separator, name)
+
+    # Replace underscores and hyphens with the chosen separator
+    name = re.sub(r"[\s_\-]+", separator, name)
+
+    # Collapse multiple consecutive separators
+    sep_escaped = re.escape(separator)
+    name = re.sub(rf"{sep_escaped}+", separator, name)
+
+    # Strip leading/trailing separator
+    name = name.strip(separator)
+
+    # Case conversion
+    if   case_mode == 'lower':  name = name.lower()
+    elif case_mode == 'upper':  name = name.upper()
+    elif case_mode == 'title':  name = name.replace(separator, ' ').title().replace(' ', separator)
+    elif case_mode == 'snake':  name = name.lower()
+    elif case_mode == 'camel':
+        parts = name.split(separator)
+        name  = parts[0].lower() + ''.join(p.title() for p in parts[1:])
+
+    return name or 'unnamed'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Conflict resolution
+# ─────────────────────────────────────────────────────────────────────────────
+def resolve_conflict(target: Path) -> Path:
+    """Append _1, _2, … to the stem until the path is free."""
+    if not target.exists():
+        return target
+    stem, suffix, parent = target.stem, target.suffix, target.parent
+    counter = 1
+    while True:
+        candidate = parent / f"{stem}_{counter}{suffix}"
+        if not candidate.exists():
+            return candidate
+        counter += 1
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Undo helpers
+# ─────────────────────────────────────────────────────────────────────────────
+def save_log(log_entries: list, log_path: Path) -> None:
+    with open(log_path, 'w', encoding='utf-8') as f:
+        json.dump(log_entries, f, indent=2, ensure_ascii=False)
+
+
+def undo_from_log(log_path: Path, dry_run: bool = False) -> None:
+    """Reverse all renames recorded in a JSON log file."""
+    if not log_path.exists():
+        logging.error(f"Log file not found: {log_path}")
+        sys.exit(1)
+
+    with open(log_path, encoding='utf-8') as f:
+        entries = json.load(f)
+
+    for entry in reversed(entries):
+        src, dst = Path(entry['new']), Path(entry['old'])
+        if not src.exists():
+            logging.warning(f"SKIP (missing): {src}")
+            continue
+        if dry_run:
+            logging.info(f"[DRY UNDO] {src} → {dst}")
+        else:
+            src.rename(dst)
+            logging.info(f"UNDO: {src} → {dst}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Main rename engine
+# ─────────────────────────────────────────────────────────────────────────────
+def rename_entries(
+    root: Path,
+    *,
+    separator: str       = '_',
+    case_mode: str       = 'original',
+    dry_run: bool        = False,
+    recursive: bool      = True,
+    rename_dirs: bool    = True,
+    rename_files: bool   = True,
+    transliterate_flag: bool = True,
+    normalize_unicode: bool  = True,
+    include_pattern: str = None,
+    exclude_pattern: str = None,
+    verbose: bool        = True,
+) -> list:
+    """
+    Walk *root* and rename every entry whose name differs after sanitization.
+    Returns a list of rename log dicts: {old, new, type, timestamp}.
+    """
+    log_entries = []
+    include_re  = re.compile(include_pattern) if include_pattern else None
+    exclude_re  = re.compile(exclude_pattern) if exclude_pattern else None
+
+    def should_process(name: str) -> bool:
+        if include_re and not include_re.search(name):
+            return False
+        if exclude_re and exclude_re.search(name):
+            return False
+        return True
+
+    def process_path(path: Path, kind: str) -> None:
+        name = path.name
+
+        if not should_process(name):
+            if verbose:
+                logging.debug(f"SKIP (filter): {path}")
+            return
+
+        if kind == 'file':
+            stem      = path.stem
+            extension = path.suffix
+            new_stem  = sanitize_name(
+                stem,
+                separator          = separator,
+                case_mode          = case_mode,
+                transliterate_flag = transliterate_flag,
+                normalize_unicode  = normalize_unicode,
+            )
+            new_name = new_stem + extension
+        else:
+            new_name = sanitize_name(
+                name,
+                separator          = separator,
+                case_mode          = case_mode,
+                transliterate_flag = transliterate_flag,
+                normalize_unicode  = normalize_unicode,
+            )
+
+        if new_name == name:
+            return
+
+        new_path = resolve_conflict(path.parent / new_name)
+
+        if verbose:
+            status = '[DRY]' if dry_run else '[RENAME]'
+            logging.info(f"{status} ({kind}) {path}  →  {new_path}")
+
+        if not dry_run:
+            path.rename(new_path)
+
+        log_entries.append({
+            'type':      kind,
+            'old':       str(path),
+            'new':       str(new_path),
+            'timestamp': datetime.now().isoformat(),
+        })
+
+    if recursive:
+        for dirpath, dirnames, filenames in os.walk(root, topdown=False):
+            current = Path(dirpath)
+            if rename_files:
+                for fname in filenames:
+                    process_path(current / fname, 'file')
+            if rename_dirs and current != root:
+                process_path(current, 'dir')
+    else:
+        for entry in root.iterdir():
+            if entry.is_file() and rename_files:
+                process_path(entry, 'file')
+            elif entry.is_dir() and rename_dirs:
+                process_path(entry, 'dir')
+
+    return log_entries
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  CLI
+# ─────────────────────────────────────────────────────────────────────────────
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog        = 'rename_files.py',
+        description = 'Smart file/directory renamer with Unicode support.',
+        formatter_class = argparse.RawDescriptionHelpFormatter,
+        epilog = """
+Examples:
+  python rename_files.py /path/to/folder
+  python rename_files.py /path/to/folder --dry-run
+  python rename_files.py /path/to/folder --separator - --case lower
+  python rename_files.py /path/to/folder --exclude "\\.git"
+  python rename_files.py --undo rename_log.json
+        """
+    )
+
+    p.add_argument('directory', nargs='?', help='Root directory to process.')
+    p.add_argument('--dry-run', '-n', action='store_true',
+                   help='Preview changes without renaming anything.')
+    p.add_argument('--separator', '-s', default='_', metavar='SEP',
+                   help='Replacement character for spaces/specials (default: _).')
+    p.add_argument('--case', '-c',
+                   choices=['original','lower','upper','title','snake','camel'],
+                   default='original', help='Case conversion mode.')
+    p.add_argument('--no-recursive', action='store_true',
+                   help='Only process top-level entries.')
+    p.add_argument('--files-only', action='store_true',
+                   help='Rename files only, skip directories.')
+    p.add_argument('--dirs-only', action='store_true',
+                   help='Rename directories only, skip files.')
+    p.add_argument('--no-transliterate', action='store_true',
+                   help='Disable transliteration.')
+    p.add_argument('--no-normalize', action='store_true',
+                   help='Disable Unicode normalization.')
+    p.add_argument('--include', metavar='REGEX',
+                   help='Only process names matching this regex.')
+    p.add_argument('--exclude', metavar='REGEX',
+                   help='Skip names matching this regex.')
+    p.add_argument('--log', metavar='FILE', default='rename_log.json',
+                   help='Path for the JSON rename log.')
+    p.add_argument('--undo', metavar='LOG_FILE',
+                   help='Undo renames from log file.')
+    p.add_argument('--quiet', '-q', action='store_true',
+                   help='Suppress per-file output.')
+    p.add_argument('--verbose', '-v', action='store_true',
+                   help='Show debug output.')
+
+    return p
+
+
+def main() -> None:
+    parser = build_parser()
+    args   = parser.parse_args()
+
+    log_level = logging.DEBUG if args.verbose else (
+                logging.WARNING if args.quiet else logging.INFO)
+    logging.basicConfig(level=log_level, format='%(levelname)-8s %(message)s')
+
+    if args.undo:
+        undo_from_log(Path(args.undo), dry_run=args.dry_run)
+        return
+
+    if not args.directory:
+        args.directory = input("Enter directory path: ").strip()
+
+    root = Path(args.directory).expanduser().resolve()
+    if not root.is_dir():
+        logging.error(f"Not a valid directory: {root}")
+        sys.exit(1)
+
+    if args.dry_run:
+        logging.info("=== DRY RUN — no files will be changed ===")
+
+    entries = rename_entries(
+        root,
+        separator          = args.separator,
+        case_mode          = args.case,
+        dry_run            = args.dry_run,
+        recursive          = not args.no_recursive,
+        rename_dirs        = not args.files_only,
+        rename_files       = not args.dirs_only,
+        transliterate_flag = not args.no_transliterate,
+        normalize_unicode  = not args.no_normalize,
+        include_pattern    = args.include,
+        exclude_pattern    = args.exclude,
+        verbose            = not args.quiet,
+    )
+
+    files_count = sum(1 for e in entries if e['type'] == 'file')
+    dirs_count  = sum(1 for e in entries if e['type'] == 'dir')
+    logging.info(
+        f"\n{'[DRY RUN] ' if args.dry_run else ''}Done. "
+        f"Files renamed: {files_count} | Dirs renamed: {dirs_count}"
+    )
+
+    if entries and not args.dry_run:
+        log_path = Path(args.log)
+        save_log(entries, log_path)
+        logging.info(f"Rename log saved to: {log_path}")
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+      </div>
     </div>
 
-    <script>
-        // Simple client-side search simulation
-        const searchInput = document.getElementById('site-search');
-        searchInput.addEventListener('keyup', (e) => {
-            const term = e.target.value.toLowerCase();
-            const content = document.getElementById('post-content');
-            
-            // In a real GitHub Pages site, this would trigger 
-            // a search across your Markdown files using Lunr.js or Google PSE.
-            if(term.length > 3) {
-                console.log("Searching for: " + term);
-            }
-        });
-    </script>
+    <!-- TAB: FEATURES -->
+    <div id="tab-features" class="tab-panel">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;">
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(88,166,255,0.12);">🌍</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Non-English Language Support</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Transliterates Cyrillic, Greek, Arabic, German umlauts, Scandinavian letters, Spanish and Portuguese chars into safe ASCII equivalents.
+          </div>
+          <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">
+            <span class="feature-badge badge-blue" style="font-size:0.7rem;">Cyrillic</span>
+            <span class="feature-badge badge-purple" style="font-size:0.7rem;">Greek</span>
+            <span class="feature-badge badge-orange" style="font-size:0.7rem;">Arabic</span>
+            <span class="feature-badge badge-green" style="font-size:0.7rem;">Scandinavian</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(188,140,255,0.12);">🔤</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Unicode NFKD Normalization</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Decomposes Unicode characters using NFKD form then strips combining accent marks. Handles <code style="color:#bc8cff;">café→cafe</code>, <code style="color:#bc8cff;">naïve→naive</code> automatically.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(63,185,80,0.12);">🔁</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Undo / Rollback</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Every rename is logged to JSON with timestamps. Run <code style="color:#3fb950;">--undo rename_log.json</code> to reverse all renames.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(255,123,114,0.12);">🛡</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Conflict Resolution</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Auto-appends <code style="color:#ff7b72;">_1</code>, <code style="color:#ff7b72;">_2</code>, … when names would collide to prevent silent overwrites.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(210,153,34,0.12);">👁</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Dry Run Mode</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Use <code style="color:#d2a520;">--dry-run</code> to preview every rename without touching any file.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(56,189,248,0.12);">🔡</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Case Conversion Modes</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Six modes: <code style="color:#38bdf8;">original</code> · <code style="color:#38bdf8;">lower</code> · <code style="color:#38bdf8;">upper</code> · <code style="color:#38bdf8;">title</code> · <code style="color:#38bdf8;">snake</code> · <code style="color:#38bdf8;">camel</code>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(88,166,255,0.12);">🚫</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Extension Preservation</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Extensions are split off before sanitization and re-appended afterward.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(188,140,255,0.12);">🔍</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Regex Include / Exclude</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            <code style="color:#bc8cff;">--include "\.mp4$"</code> or <code style="color:#bc8cff;">--exclude "\.git"</code> for precise targeting.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(63,185,80,0.12);">📋</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">JSON Operation Log</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Every rename is saved with original path, new path, entry type, and ISO timestamp.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(255,123,114,0.12);">⚙</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Full CLI via argparse</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            All options exposed as CLI arguments with <code style="color:#ff7b72;">--help</code>.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(210,153,34,0.12);">🧹</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Special Character Handling</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Strips <code style="color:#d2a520;"># & % $ @ ! ( ) [ ] { }</code> and collapses consecutive separators.
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(56,189,248,0.12);">🖥</div>
+          <div style="font-weight:700; margin-bottom:6px; font-size:0.95rem;">Cross-Platform</div>
+          <div style="color:#8b949e; font-size:0.83rem; line-height:1.6;">
+            Uses <code style="color:#38bdf8;">pathlib.Path</code> — works on Linux, macOS, and Windows.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB: USAGE -->
+    <div id="tab-usage" class="tab-panel">
+      <div style="display:grid; gap:16px;">
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:16px 20px; border-bottom:1px solid #30363d;">
+            <span style="font-weight:700; font-size:0.95rem;">⚙ CLI Arguments Reference</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>Flag</th><th>Short</th><th>Default</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code style="color:#58a6ff;">--dry-run</code></td><td><code style="color:#8b949e;">-n</code></td><td><code style="color:#3fb950;">False</code></td><td>Preview without changing files</td></tr>
+                <tr><td><code style="color:#58a6ff;">--separator</code></td><td><code style="color:#8b949e;">-s</code></td><td><code style="color:#3fb950;">_</code></td><td>Replacement char for spaces/specials</td></tr>
+                <tr><td><code style="color:#58a6ff;">--case</code></td><td><code style="color:#8b949e;">-c</code></td><td><code style="color:#3fb950;">original</code></td><td>Case mode: lower/upper/title/snake/camel</td></tr>
+                <tr><td><code style="color:#58a6ff;">--no-recursive</code></td><td>—</td><td><code style="color:#3fb950;">False</code></td><td>Only process top-level entries</td></tr>
+                <tr><td><code style="color:#58a6ff;">--files-only</code></td><td>—</td><td><code style="color:#3fb950;">False</code></td><td>Skip directories</td></tr>
+                <tr><td><code style="color:#58a6ff;">--dirs-only</code></td><td>—</td><td><code style="color:#3fb950;">False</code></td><td>Skip files</td></tr>
+                <tr><td><code style="color:#58a6ff;">--include</code></td><td>—</td><td>—</td><td>Regex: only process matching names</td></tr>
+                <tr><td><code style="color:#58a6ff;">--exclude</code></td><td>—</td><td>—</td><td>Regex: skip matching names</td></tr>
+                <tr><td><code style="color:#58a6ff;">--log</code></td><td>—</td><td><code style="color:#3fb950;">rename_log.json</code></td><td>Output path for JSON log</td></tr>
+                <tr><td><code style="color:#58a6ff;">--undo</code></td><td>—</td><td>—</td><td>Reverse renames using log file</td></tr>
+                <tr><td><code style="color:#58a6ff;">--quiet</code></td><td><code style="color:#8b949e;">-q</code></td><td><code style="color:#3fb950;">False</code></td><td>Suppress per-file output</td></tr>
+                <tr><td><code style="color:#58a6ff;">--verbose</code></td><td><code style="color:#8b949e;">-v</code></td><td><code style="color:#3fb950;">False</code></td><td>Show debug output</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;">
+          <div style="font-weight:700; margin-bottom:16px; font-size:0.95rem;">💡 Example Commands</div>
+          <div style="display:grid; gap:10px;">
+            <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.82rem;">
+              <span style="color:#8b949e;"># Basic usage</span><br/>
+              <span style="color:#3fb950;">python</span> rename_files.py /downloads
+            </div>
+            <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.82rem;">
+              <span style="color:#8b949e;"># Preview only (dry run)</span><br/>
+              <span style="color:#3fb950;">python</span> rename_files.py /downloads <span style="color:#58a6ff;">--dry-run</span>
+            </div>
+            <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.82rem;">
+              <span style="color:#8b949e;"># Use hyphens + lowercase</span><br/>
+              <span style="color:#3fb950;">python</span> rename_files.py /downloads <span style="color:#58a6ff;">-s</span> - <span style="color:#58a6ff;">-c</span> lower
+            </div>
+            <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.82rem;">
+              <span style="color:#8b949e;"># Only rename .mp4 files</span><br/>
+              <span style="color:#3fb950;">python</span> rename_files.py /videos <span style="color:#58a6ff;">--files-only --include</span> <span style="color:#d2a520;">"\.mp4$"</span>
+            </div>
+            <div style="background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:14px 16px; font-family:'Fira Code',monospace; font-size:0.82rem;">
+              <span style="color:#8b949e;"># Undo all renames</span><br/>
+              <span style="color:#3fb950;">python</span> rename_files.py <span style="color:#58a6ff;">--undo</span> rename_log.json
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="overflow:hidden;">
+          <div style="padding:16px 20px; border-bottom:1px solid #30363d;">
+            <span style="font-weight:700; font-size:0.95rem;">🌍 Transliteration Examples</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr><th>Original Name</th><th>Script</th><th>Renamed To</th></tr></thead>
+              <tbody>
+                <tr><td><code>Привет мир.txt</code></td><td><span class="feature-badge badge-purple" style="font-size:0.7rem;">Cyrillic</span></td><td><code style="color:#3fb950;">Privet_mir.txt</code></td></tr>
+                <tr><td><code>über straße.mp3</code></td><td><span class="feature-badge badge-green" style="font-size:0.7rem;">German</span></td><td><code style="color:#3fb950;">ueber_strasse.mp3</code></td></tr>
+                <tr><td><code>café résumé.txt</code></td><td><span class="feature-badge badge-teal" style="font-size:0.7rem;">French</span></td><td><code style="color:#3fb950;">cafe_resume.txt</code></td></tr>
+                <tr><td><code>My File (copy) [1].txt</code></td><td><span class="feature-badge badge-yellow" style="font-size:0.7rem;">Special</span></td><td><code style="color:#3fb950;">My_File_copy_1.txt</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: COMPARE -->
+    <div id="tab-compare" class="tab-panel">
+      <div class="card" style="overflow:hidden; margin-bottom:16px;">
+        <div style="padding:16px 20px; border-bottom:1px solid #30363d;">
+          <span style="font-weight:700; font-size:0.95rem;">⚡ Bash vs Python — Feature Comparison</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th style="color:#f78166;">Bash (Original)</th>
+                <th style="color:#3fb950;">Python (Enhanced)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Space replacement</td><td style="color:#f78166;">Basic <code>tr</code></td><td style="color:#3fb950;">✅ Regex + separator arg</td></tr>
+              <tr><td>Special characters</td><td style="color:#f78166;">❌ Not handled</td><td style="color:#3fb950;">✅ Fully stripped</td></tr>
+              <tr><td>Non-English</td><td style="color:#f78166;">❌ No support</td><td style="color:#3fb950;">✅ Full transliteration</td></tr>
+              <tr><td>Unicode normalization</td><td style="color:#f78166;">❌ None</td><td style="color:#3fb950;">✅ NFKD + accent strip</td></tr>
+              <tr><td>Dry run</td><td style="color:#f78166;">❌ None</td><td style="color:#3fb950;">✅ <code>--dry-run</code></td></tr>
+              <tr><td>Undo</td><td style="color:#f78166;">❌ None</td><td style="color:#3fb950;">✅ JSON log + <code>--undo</code></td></tr>
+              <tr><td>Conflict resolution</td><td style="color:#f78166;">❌ Overwrites</td><td style="color:#3fb950;">✅ Auto numbering</td></tr>
+              <tr><td>Case conversion</td><td style="color:#f78166;">❌ None</td><td style="color:#3fb950;">✅ 6 modes</td></tr>
+              <tr><td>Cross-platform</td><td style="color:#f78166;">❌ Unix only</td><td style="color:#3fb950;">✅ All platforms</td></tr>
+              <tr><td>Zero dependencies</td><td style="color:#3fb950;">✅ Shell builtins</td><td style="color:#3fb950;">✅ Python stdlib</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="section-divider"></div>
+    <div style="text-align:center; color:#484f58; font-size:0.8rem; padding-bottom:32px;">
+      Built with Python 3 · stdlib only · No pip install required ·
+      <a href="https://github.com/YOUR_USERNAME/YOUR_REPO" style="color:#58a6ff; text-decoration:none;">View on GitHub</a>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { hljs.highlightAll(); });
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function copyCode() {
+      const code = document.getElementById('codeBlock').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2200);
+      });
+    }
+  </script>
 </body>
 </html>
