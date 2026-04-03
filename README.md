@@ -4,7 +4,7 @@
 
 [![Python 3.x](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://YOUR_USERNAME.github.io/YOUR_REPO/)
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://ssd-Ind.github.io/TechBlogs/)
 
 ---
 
@@ -26,7 +26,7 @@
 
 ```bash
 # Download
-curl -O https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/rename_files.py
+curl -O https://raw.githubusercontent.com/ssd-Ind/TechBlogs/main/rename_files.py
 
 # Preview changes (dry run)
 python3 rename_files.py /path/to/folder --dry-run
